@@ -56,9 +56,85 @@ describe("FundMe", async function () {
         beforeEach(async () => {
             await fundMe.fund({ value: sendValue })
         })
-        it("", async function () {
-            await expect(fundMe.fund()).to.be.revertedWith(
-                "You need to spend more ETH!"
+        it("gives a single funder all their ETH back", async () => {
+            // Arrange
+            const startingFundMeBalance = await fundMe.provider.getBalance(
+                fundMe.address
+            )
+            const startingDeployerBalance = await fundMe.provider.getBalance(
+                deployer.address
+            )
+
+            // Act
+            const transactionResponse = await fundMe.withdraw()
+            const transactionReceipt = await transactionResponse.wait(1)
+            const { gasUsed, effectiveGasPrice } = transactionReceipt
+            const gasCost = gasUsed.mul(effectiveGasPrice)
+
+            const endingFundMeBalance = await fundMe.provider.getBalance(
+                fundMe.address
+            )
+            const endingDeployerBalance = await fundMe.provider.getBalance(
+                deployer.address
+            )
+
+            // Assert
+            assert.equal(endingFundMeBalance.toString(), "0")
+            assert.equal(
+                startingFundMeBalance.add(startingDeployerBalance).toString(),
+                endingDeployerBalance.add(gasCost).toString()
+            )
+        })
+        // this test is overloaded. Ideally we'd split it into multiple tests
+        // but for simplicity we left it as one
+        it("allows us to withdraw with multiple funders", async () => {
+            // Arrange
+            const accounts = await ethers.getSigners()
+            for (let i = 1; i <= 5; i++) {
+                const fundMeConnectedContract = await fundMe.connect(
+                    accounts[i]
+                )
+                await fundMeConnectedContract.fund({ value: sendValue })
+            }
+            const startingFundMeBalance = await fundMe.provider.getBalance(
+                fundMe.address
+            )
+            const startingDeployerBalance = await fundMe.provider.getBalance(
+                deployer.address
+            )
+
+            // Act
+            const transactionResponse = await fundMe.withdraw()
+            const transactionReceipt = await transactionResponse.wait(1)
+            const { gasUsed, effectiveGasPrice } = transactionReceipt
+            const gasCost = gasUsed.mul(effectiveGasPrice)
+
+            const endingFundMeBalance = await fundMe.provider.getBalance(
+                fundMe.address
+            )
+            const endingDeployerBalance = await fundMe.provider.getBalance(
+                deployer.address
+            )
+
+            // Assert
+            assert.equal(endingFundMeBalance.toString(), "0")
+            assert.equal(
+                startingFundMeBalance.add(startingDeployerBalance).toString(),
+                endingDeployerBalance.add(gasCost).toString()
+            )
+            // Make sure the funders are reset properly
+            await expect(fundMe.funders(0)).to.be.reverted
+            for (let i = 1; i <= 5; i++) {
+                const addressToAmountFundedAccount =
+                    await fundMe.addressToAmountFunded(accounts[i].address)
+                assert.equal(addressToAmountFundedAccount.toString(), "0")
+            }
+        })
+        it("Only lets owner withdraw the funds", async function () {
+            const accounts = await ethers.getSigners()
+            const fundMeConnectedContract = await fundMe.connect(accounts[1])
+            expect(fundMeConnectedContract.withdraw()).to.be.revertedWith(
+                "FundMe_NotOwner"
             )
         })
     })
