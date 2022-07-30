@@ -53,7 +53,7 @@ module.exports = {
             chainId: 137,
         },
         localhost: {
-            url: "https://127.0.0.1:8545/",
+            url: "http://127.0.0.1:8545/",
             chainId: 31337,
         },
     },
@@ -66,11 +66,11 @@ module.exports = {
         },
     },
     gasReporter: {
-        enabled: false,
+        enabled: true,
         outputFile: "gas-report.txt",
         noColors: true,
         currency: "USD",
-        coinmarketcap: COINMARKETCAP_API_KEY,
+        // coinmarketcap: COINMARKETCAP_API_KEY,
         // token: "MATIC",
     },
     etherscan: {

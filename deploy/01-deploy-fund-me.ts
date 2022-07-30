@@ -4,11 +4,10 @@ import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { developmentChains, networkConfig } from "../helper-hardhat-config"
 import verify from "../utils/verify"
 
-const deployFundMe: DeployFunction = async function ({
-    getNamedAccounts,
-    deployments,
-    network,
-}: HardhatRuntimeEnvironment) {
+const deployFundMe: DeployFunction = async function (
+    hre: HardhatRuntimeEnvironment
+) {
+    const { deployments, getNamedAccounts, network } = hre
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
     let ethUsdPriceFeedAddress: string

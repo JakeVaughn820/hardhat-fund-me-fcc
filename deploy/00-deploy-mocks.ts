@@ -1,4 +1,3 @@
-import { network } from "hardhat"
 import { HardhatRuntimeEnvironment } from "hardhat/types"
 import { DeployFunction } from "hardhat-deploy/types"
 import {
@@ -7,10 +6,10 @@ import {
     INITIAL_ANSWER,
 } from "../helper-hardhat-config"
 
-const deployMocks: DeployFunction = async function ({
-    getNamedAccounts,
-    deployments,
-}: HardhatRuntimeEnvironment) {
+const deployMocks: DeployFunction = async function (
+    hre: HardhatRuntimeEnvironment
+) {
+    const { deployments, getNamedAccounts, network } = hre
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
 
