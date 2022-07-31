@@ -6,7 +6,8 @@ import verify from "../utils/verify"
 const deployStorageFun: DeployFunction = async function (
     hre: HardhatRuntimeEnvironment
 ) {
-    const { deployments, getNamedAccounts, network } = hre
+    // @ts-ignore
+    const { network, deployments, getNamedAccounts, ethers } = hre
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
 

@@ -7,6 +7,7 @@ import verify from "../utils/verify"
 const deployFundMe: DeployFunction = async function (
     hre: HardhatRuntimeEnvironment
 ) {
+    // @ts-ignore
     const { deployments, getNamedAccounts, network } = hre
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()

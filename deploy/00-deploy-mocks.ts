@@ -9,6 +9,7 @@ import {
 const deployMocks: DeployFunction = async function (
     hre: HardhatRuntimeEnvironment
 ) {
+    // @ts-ignore
     const { deployments, getNamedAccounts, network } = hre
     const { deploy, log } = deployments
     const { deployer } = await getNamedAccounts()
